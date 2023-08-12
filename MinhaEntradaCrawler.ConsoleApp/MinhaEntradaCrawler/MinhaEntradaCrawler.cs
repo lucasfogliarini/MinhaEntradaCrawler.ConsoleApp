@@ -18,9 +18,14 @@ namespace MinhaEntrada
         {
 			OrganizerSchedule = $"{MINHAENTRADA_DOMAIN}/{eventOrganizer}/agenda-geral";
 		}
-        public async Task<List<Event>> CrawlEventsAsync(DateTime startDate, DateTime endDate)
+        public async Task<List<Event>> CrawlEventsAsync(DateTime? startDate = null, DateTime? endDate = null)
 		{
-			string scheduleUrl = $"{OrganizerSchedule}?data-inicio={startDate:yyyy-MM-dd}&data-fim={endDate:yyyy-MM-dd}";
+			string scheduleUrl = OrganizerSchedule;
+			if (startDate >= DateTime.Today)
+			{
+				endDate ??= startDate;
+				scheduleUrl = $"{OrganizerSchedule}?data-inicio={startDate:yyyy-MM-dd}&data-fim={endDate:yyyy-MM-dd}";
+			}
 			var document = await GetHtmlDocumentAsync(scheduleUrl);
 			return ExtractEvents(document);
 		}
